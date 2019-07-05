@@ -57,7 +57,7 @@ public class TimelineActivity extends AppCompatActivity {
         scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                fetchTimelineAsync(page);
+                fetchTimelineAsync(page, false);
             }
         };
         // Adds the scroll listener to RecyclerView
@@ -79,7 +79,7 @@ public class TimelineActivity extends AppCompatActivity {
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
                 showProgressBar();
-                fetchTimelineAsync(0);
+                fetchTimelineAsync(0, true);
             }
         });
         // Configure the refreshing colors
@@ -191,8 +191,7 @@ public class TimelineActivity extends AppCompatActivity {
         });
     }
 
-    public void fetchTimelineAsync(int page) {
-        final boolean isRefreshed = false;
+    public void fetchTimelineAsync(int page, boolean isRefreshed) {
         if (!isRefreshed) {
             maxId = tweets.get(tweets.size() - 1).uid;
         } else {

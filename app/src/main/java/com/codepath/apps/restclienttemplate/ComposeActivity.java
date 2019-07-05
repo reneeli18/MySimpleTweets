@@ -50,7 +50,6 @@ public class ComposeActivity extends AppCompatActivity {
                     data.putExtra("tweet", Parcels.wrap(tweet));
                     // Activity finished ok, return the data
                     setResult(RESULT_OK, data); // set result code and bundle data for response
-
                     finish(); // closes the activity, pass data to parent
 
                 } catch (JSONException e) {

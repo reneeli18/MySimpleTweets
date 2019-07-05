@@ -2,6 +2,7 @@ package com.codepath.apps.restclienttemplate;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,6 +28,8 @@ public class TimelineActivity extends AppCompatActivity {
     TweetAdapter tweetAdapter;
     ArrayList<Tweet> tweets;
     RecyclerView rvTweets;
+    private SwipeRefreshLayout swipeContainer;
+    MenuItem miActionProgressItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,32 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets.setLayoutManager(new LinearLayoutManager(this));
         //set the adapter
         rvTweets.setAdapter(tweetAdapter);
+
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.ic_launcher_twitter);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+
+        // Lookup the swipe container view
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                showProgressBar();
+                fetchTimelineAsync(0);
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
         populateTimeline();
     }
 
@@ -58,8 +87,10 @@ public class TimelineActivity extends AppCompatActivity {
     private final int REQUEST_CODE = 20;
 
     public void onComposeAction(MenuItem mi) {
+        showProgressBar();
         Intent i = new Intent(TimelineActivity.this, ComposeActivity.class);
         startActivityForResult(i, REQUEST_CODE);
+        hideProgressBar();
     }
 
     @Override
@@ -75,24 +106,27 @@ public class TimelineActivity extends AppCompatActivity {
             tweets.add(0, tweet);
             tweetAdapter.notifyItemInserted(0);
             rvTweets.scrollToPosition(0);
-            rvTweets.scrollToPosition(0);
         }
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle presses on the action bar items
-//        switch (item.getItemId()) {
-//            case R.id.miCompose:
-//                composeMessage();
-//                return true;
-//            case R.id.miProfile:
-//                showProfileView();
-//                return true;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // Store instance of the menu item containing progress
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        // Extract the action-view from the menu item
+        //ProgressBar v =  (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
+        // Return to finish
+        return super.onPrepareOptionsMenu(menu);
+    }
+    public void showProgressBar() {
+        // Show progress item
+        miActionProgressItem.setVisible(true);
+    }
+
+    public void hideProgressBar() {
+        // Hide progress item
+        miActionProgressItem.setVisible(false);
+    }
 
     private void populateTimeline() {
         client.getHomeTimeline(new JsonHttpResponseHandler() {
@@ -116,6 +150,7 @@ public class TimelineActivity extends AppCompatActivity {
                         tweet = Tweet.fromJSON(response.getJSONObject(i));
                         tweets.add(tweet);
                         tweetAdapter.notifyItemInserted(tweets.size() - 1);
+                        hideProgressBar();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -140,5 +175,13 @@ public class TimelineActivity extends AppCompatActivity {
                 throwable.printStackTrace();
             }
         });
+    }
+
+    public void fetchTimelineAsync(int page) {
+        tweetAdapter.clear();
+        // ...the data has come back, add new items to your adapter...
+        populateTimeline();
+        // Now we call setRefreshing(false) to signal refresh has finished
+        swipeContainer.setRefreshing(false);
     }
 }

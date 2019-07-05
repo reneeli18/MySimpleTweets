@@ -30,6 +30,9 @@ public class TimelineActivity extends AppCompatActivity {
     RecyclerView rvTweets;
     private SwipeRefreshLayout swipeContainer;
     MenuItem miActionProgressItem;
+    private EndlessRecyclerViewScrollListener scrollListener;
+    //keeps track of the lowest max_id for the infinite scrolling
+    private long maxId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,17 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets.setLayoutManager(new LinearLayoutManager(this));
         //set the adapter
         rvTweets.setAdapter(tweetAdapter);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        rvTweets.setLayoutManager(linearLayoutManager);
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                fetchTimelineAsync(page);
+            }
+        };
+        // Adds the scroll listener to RecyclerView
+        rvTweets.addOnScrollListener(scrollListener);
 
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -129,7 +143,7 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
     private void populateTimeline() {
-        client.getHomeTimeline(new JsonHttpResponseHandler() {
+        client.getHomeTimeline(maxId, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d("TwitterClient", response.toString());
@@ -178,7 +192,13 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
     public void fetchTimelineAsync(int page) {
-        tweetAdapter.clear();
+        final boolean isRefreshed = false;
+        if (!isRefreshed) {
+            maxId = tweets.get(tweets.size() - 1).uid;
+        } else {
+            tweetAdapter.clear();
+            maxId = -1;
+        }
         // ...the data has come back, add new items to your adapter...
         populateTimeline();
         // Now we call setRefreshing(false) to signal refresh has finished

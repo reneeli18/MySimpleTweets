@@ -56,12 +56,12 @@
         app:layout_constraintStart_toEndOf="@+id/ivProfileImage"
         app:layout_constraintTop_toBottomOf="@+id/tvUserName" />
 
-    <ImageView
-        android:id="@+id/ivImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@+id/ivProfileImage"
-        app:layout_constraintTop_toBottomOf="@+id/tvBody"
-        app:srcCompat="@drawable/ic_launcher_twitter" />
+    <!--<ImageView-->
+        <!--android:id="@+id/ivImage"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="8dp"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/ivProfileImage"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/tvBody"-->
+        <!--app:srcCompat="@drawable/ic_launcher_twitter" />-->
 </android.support.constraint.ConstraintLayout>

@@ -61,13 +61,13 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
                         .error(placeholderId))
                 .into(holder.ivProfileImage);
 
-        //if (tweet.image != "") {
-        Glide.with(context)
-                .load(tweet.image)
-                .into(holder.ivImage);
-        //} else {
-        holder.ivImage.setVisibility(View.GONE);
-        //}
+        if (tweet.image != "") {
+            Glide.with(context)
+                    .load(tweet.image)
+                    .into(holder.ivImage);
+        } else {
+            holder.ivImage.setVisibility(View.GONE);
+        }
     }
 
     @Override

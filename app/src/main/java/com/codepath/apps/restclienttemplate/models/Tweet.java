@@ -2,6 +2,7 @@ package com.codepath.apps.restclienttemplate.models;
 
 import android.text.format.DateUtils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcel;
@@ -18,6 +19,7 @@ public class Tweet {
     public long uid;
     public User user;
     public String createdAt;
+    public String image;
 
     public Tweet() {
 
@@ -32,6 +34,14 @@ public class Tweet {
         tweet.uid = jsonObject.getLong("id");
         tweet.createdAt = jsonObject.getString("created_at");
         tweet.user = User.fromJSON(jsonObject.getJSONObject("user"));
+        JSONObject entities = jsonObject.getJSONObject("entities");
+        if (entities.has("media")) {
+            JSONArray media = entities.getJSONArray("media");
+            tweet.image = media.getJSONObject(0).getString("media_url_https");
+        } else {
+
+        }
+
         return tweet;
     }
 

@@ -53,8 +53,6 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
 
         holder.tvAt.setText("@" + user.screenName);
 
-        //String imageUrl = null;
-
         int placeholderId = R.drawable.ic_launcher_twitter;
 
         Glide.with(context)
@@ -63,11 +61,13 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
                         .error(placeholderId))
                 .into(holder.ivProfileImage);
 
-//        Glide.with(context)
-//                .load(imageUrl)
-//                .apply(new RequestOptions().placeholder(placeholderId)
-//                        .error(placeholderId))
-//                .into(holder.ivImage);
+        //if (tweet.image != "") {
+        Glide.with(context)
+                .load(tweet.image)
+                .into(holder.ivImage);
+        //} else {
+        holder.ivImage.setVisibility(View.GONE);
+        //}
     }
 
     @Override
@@ -94,7 +94,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
             tvBody = (TextView) itemView.findViewById(R.id.tvBody);
             tvTimestamp = (TextView) itemView.findViewById(R.id.tvTimestamp);
             tvAt = (TextView) itemView.findViewById(R.id.tvAt);
-            //ivImage = (ImageView) itemView.findViewById(R.id.ivImage);
+            ivImage = (ImageView) itemView.findViewById(R.id.ivImage);
         }
     }
 

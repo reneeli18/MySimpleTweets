@@ -12,7 +12,6 @@ public class User {
     public long uid;
     public String screenName;
     public String profileImageUrl;
-    //public String imageUrl;
 
     public User() {
 
@@ -27,7 +26,6 @@ public class User {
         user.uid = json.getLong("id");
         user.screenName = json.getString("screen_name");
         user.profileImageUrl = json.getString("profile_image_url_https");
-        //user.imageUrl = json.getString("display_url");
 
         return user;
     }
